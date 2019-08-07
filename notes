@@ -1,3 +1,6 @@
-mkdir -p /var/nomad
+mkdir -p /var/nomad [this migh be not necessary actually]
+
 mkdir -p /sbin
 ln -s /run/current-system/sw/bin/ip /sbin/ip
+
+had to manually add my keys so that I could create tunnels to access the UI

@@ -21,17 +21,9 @@ in
           log_level = "DEBUG"
           data_dir = "/var/nomad"
 
-          consul {
-            address = "ajpik:8500"
-          }
-
           client {
               enabled = true
           }
-
-          servers = [
-            "ajpik:4647"
-          ]
 
           ports {
               http = 5656
@@ -45,12 +37,6 @@ in
         text = ''
           log_level = "DEBUG"
           data_dir = "/var/nomad"
-
-          bind_addr = "{{ GetPublicIP }}"
-
-          consul {
-            address = "{{ GetPublicIP }}:8500"
-          }
 
           server_join {
               retry_join = [
@@ -97,7 +83,7 @@ in
         description = "Consul client and server";
 
         serviceConfig = {
-           ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --client '{{ GetPublicIP }}'";
+           ExecStart = "${whichPkg "consul"} agent --dev --ui";
            Restart = "on-failure";
         };
 
