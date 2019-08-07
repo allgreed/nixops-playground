@@ -1,0 +1,3 @@
+mkdir -p /var/nomad
+mkdir -p /sbin
+ln -s /run/current-system/sw/bin/ip /sbin/ip
