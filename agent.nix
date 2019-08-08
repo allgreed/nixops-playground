@@ -83,6 +83,7 @@ in
     systemd.services.nomad-client = nomadService "client";
     systemd.services.nomad-server = nomadService "server";
 
+    # TODO: Move it into a real service without --dev
     systemd.services.consul-dev = {
         description = "Consul client and server";
 
@@ -94,6 +95,7 @@ in
         wantedBy = [ "multi-user.target" ];
     };
 
-    #networking.firewall.allowedTCPPorts = [ 80 ];
+    #networking.firewall.allowedTCPPorts = [ # TODO: nomad ports, consul ports, services ports
+    #];
     networking.firewall.enable = false; # TODO: scurity, heh xD
 }
