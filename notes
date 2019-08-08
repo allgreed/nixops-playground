@@ -1,4 +1,1 @@
-mkdir -p /sbin
-ln -s /run/current-system/sw/bin/ip /sbin/ip
-
 had to manually add my keys so that I could create tunnels to access the UI

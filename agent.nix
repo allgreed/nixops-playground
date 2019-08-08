@@ -3,26 +3,61 @@ let
   whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
 
   nomadUser = "nomad";
+
   nomadService = kind: {
         description = "Nomad ${kind}";
+        # TODO: how to do UI
 
         serviceConfig = {
-           ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
-           Restart = "on-failure";
            # TODO: Nomad user
-           # TODO: how to do UI
+
+           ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
+           ExecReload="/run/current-system/sw/bin/kill -HUP $MAINPID";
+
+           KillMode="process";
+
+           Restart = "on-failure";
+           RestartSec="42s";
         };
 
-        #ExecReload=/bin/kill -HUP $MAINPID
-        #KillMode=process
-        #Restart=on-failure
-        #RestartSec=42s
-
         wantedBy = [ "multi-user.target" ];
-        #Wants=basic.target
-        #After=basic.target network.target
+        wants = [ "basic.target" ];
+        after = [ "basic.target" "network.target" ];
   };
 
+  nomadCommonConfiguration = ''
+      log_level = "DEBUG"
+      data_dir = "/var/nomad"'';
+
+  nomadServerConfiguration = {
+      filename = "nomad-server.hcl";
+      text = ''
+          server {
+              enabled = true
+              bootstrap_expect = 1
+          }
+
+          server_join {
+              retry_join = [
+              ]
+          }
+
+          ${nomadCommonConfiguration}'';
+  };
+
+  nomadClientConfiguration = {
+      filename = "nomad-client.hcl";
+      text = ''
+          client {
+              enabled = true
+          }
+
+          ports {
+              http = 5656
+          }
+
+          ${nomadCommonConfiguration}'';
+  };
 in
 {
     environment.systemPackages = with pkgs; [
@@ -34,39 +69,13 @@ in
     virtualisation.docker.enable = true;
 
     environment.etc = {
-      "nomad-client.hcl" = {
-        text = ''
-          log_level = "DEBUG"
-          data_dir = "/var/nomad"
-
-          client {
-              enabled = true
-          }
-
-          ports {
-              http = 5656
-          }
-        '';
-
+      "${nomadServerConfiguration.filename}" = {
+        text = nomadServerConfiguration.text;
         mode = "0440";
       };
 
-      "nomad-server.hcl" = {
-        text = ''
-          log_level = "DEBUG"
-          data_dir = "/var/nomad"
-
-          server_join {
-              retry_join = [
-              ]
-          }
-
-          server {
-              enabled = true
-              bootstrap_expect = 1
-          }
-        '';
-
+      "${nomadClientConfiguration.filename}" = {
+        text = nomadClientConfiguration.text;
         mode = "0440";
       };
     };
@@ -88,4 +97,3 @@ in
     #networking.firewall.allowedTCPPorts = [ 80 ];
     networking.firewall.enable = false; # TODO: scurity, heh xD
 }
-

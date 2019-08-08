@@ -1,14 +1,24 @@
 .DEFAULT_GOAL := help
 
-NOMAD_ADDR := 165.22.94.177#TODO: dehardcode it
+NOMAD_ADDR := 167.71.41.107#TODO: dehardcode it
 NOMAD_URL := http://$(NOMAD_ADDR):4646
+DEPLOYMENT ?= single
 
 JOBS := $(shell find jobs -type f -name '*.nomad')
 
 .PHONY: up down
-up: ## ble
+up: ## create the environement
+	nixops deploy -d $(DEPLOYMENT) --allow-reboot
+	./fixup # a hack to make Nomad client work
+	./isoltate-mutli-user-target # ensure congreunt deployment
 
-down: ##  ble ble
+deploy: ## apply changes
+	nixops deploy -d $(DEPLOYMENT)
+	./isoltate-mutli-user-target # ensure congreunt deployment
+
+down: ## destroy the environment
+	nixops destroy -d $(DEPLOYMENT)
+
 	
 .PHONY: $(JOBS) workload
 workload: $(JOBS) ## apply latest jobs configuration

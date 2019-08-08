@@ -1,4 +1,2 @@
 #!/usr/bin/env sh
-# $1 -- the name of the machine
-
-nixops ssh $1 systemctl isolate multi-user.target
+nixops ssh-for-each -p systemctl isolate multi-user.target
