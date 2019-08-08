@@ -1,12 +1,12 @@
 .DEFAULT_GOAL := help
 
-NOMAD_ADDR := 167.71.41.107#TODO: dehardcode it
-NOMAD_URL := http://$(NOMAD_ADDR):4646
+NODE_IP := 167.71.41.107#TODO: dehardcode it
+NOMAD_URL := http://$(NODE_IP):4646
 DEPLOYMENT ?= single
 
 JOBS := $(shell find jobs -type f -name '*.nomad')
 
-.PHONY: up down
+.PHONY: up down tunnel deploy
 up: ## create the environement
 	nixops deploy -d $(DEPLOYMENT) --allow-reboot
 	./fixup # a hack to make Nomad client work
@@ -19,6 +19,8 @@ deploy: ## apply changes
 down: ## destroy the environment
 	nixops destroy -d $(DEPLOYMENT)
 
+tunnel: ## setup local port forwarding for Consul UI
+	ssh root@$(NODE_IP) -L :8500:localhost:8500 -T
 	
 .PHONY: $(JOBS) workload
 workload: $(JOBS) ## apply latest jobs configuration
