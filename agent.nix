@@ -1,12 +1,30 @@
 { config, pkgs, nodes, ... }: 
 let
-  whichPkg = pkg: "${builtins.getAttr pkg pkgs }/bin/${pkg}";
+  whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
+
+  nomadUser = "nomad";
+  nomadService = kind: {
+        description = "Nomad ${kind}";
+
+        serviceConfig = {
+           ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
+           Restart = "on-failure";
+           # TODO: Nomad user
+           # TODO: how to do UI
+        };
+
+        #ExecReload=/bin/kill -HUP $MAINPID
+        #KillMode=process
+        #Restart=on-failure
+        #RestartSec=42s
+
+        wantedBy = [ "multi-user.target" ];
+        #Wants=basic.target
+        #After=basic.target network.target
+  };
+
 in
 {
-    # TODO: how to start thoose services automatically?
-    # https://github.com/NixOS/nixops/pull/1078
-    # systemctl isolate multi-user.target
-
     environment.systemPackages = with pkgs; [
         nomad
         consul
@@ -53,31 +71,8 @@ in
       };
     };
 
-    systemd.services.nomad-client = {
-        description = "Nomad client";
-
-        # TODO: Nomad user
-        # TODO: how to do UI
-        serviceConfig = {
-           ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-client.hcl";
-           Restart = "on-failure";
-        };
-
-        wantedBy = [ "multi-user.target" ];
-    };
-
-    systemd.services.nomad-server = {
-        description = "Nomad server";
-
-        # TODO: Nomad user
-        # TODO: how to do UI
-        serviceConfig = {
-           ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-server.hcl";
-           Restart = "on-failure";
-        };
-
-        wantedBy = [ "multi-user.target" ];
-    };
+    systemd.services.nomad-client = nomadService "client";
+    systemd.services.nomad-server = nomadService "server";
 
     systemd.services.consul-dev = {
         description = "Consul client and server";
