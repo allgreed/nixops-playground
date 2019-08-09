@@ -10,7 +10,6 @@ let
 
         path = with pkgs; [
           iproute
-          #nomad
         ];
 
         serviceConfig = {
