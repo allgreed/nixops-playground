@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-nixops ssh-for-each -p 'mkdir -p /sbin'
-nixops ssh-for-each -p 'ln -s /run/current-system/sw/bin/ip /sbin/ip'

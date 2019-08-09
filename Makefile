@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-NODE_IP := 167.71.41.107#TODO: dehardcode it
+NODE_IP := 134.209.234.73#TODO: dehardcode it
 NOMAD_URL := http://$(NODE_IP):4646
 DEPLOYMENT ?= single
 
@@ -9,7 +9,6 @@ JOBS := $(shell find jobs -type f -name '*.nomad')
 .PHONY: up down tunnel deploy
 up: ## create the environement
 	nixops deploy -d $(DEPLOYMENT) --allow-reboot
-	./fixup # a hack to make Nomad client work
 	./isoltate-mutli-user-target # ensure congreunt deployment
 
 deploy: ## apply changes

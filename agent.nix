@@ -8,11 +8,16 @@ let
         description = "Nomad ${kind}";
         # TODO: how to do UI
 
+        path = with pkgs; [
+          iproute
+          #nomad
+        ];
+
         serviceConfig = {
            # TODO: Nomad user
 
            ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
-           ExecReload="/run/current-system/sw/bin/kill -HUP $MAINPID";
+           ExecReload = "/run/current-system/sw/bin/kill -HUP $MAINPID";
 
            KillMode="process";
 
