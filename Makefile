@@ -1,8 +1,9 @@
 .DEFAULT_GOAL := help
 
-NODE_IP := 134.209.237.145#TODO: dehardcode it
+NODE_IP := `nixops info -d single --no-eval --plain | grep -Po '\d+.\d+.\d+\.\d+' | head -n 1`
 NOMAD_URL := http://$(NODE_IP):4646
 DEPLOYMENT ?= single
+
 
 JOBS := $(shell find jobs -type f -name '*.nomad')
 

@@ -5,6 +5,7 @@ in
 {
     resources.sshKeyPairs.ssh-key = {};
 
-    maszyna = { config, pkgs, ... }: agent { inherit config; inherit pkgs; }
-      // smallDroplet { inherit config; inherit pkgs; };
+    # TODO: pretify it
+    maszyna = { config, pkgs, nodes, ... }: agent { inherit config; inherit pkgs; inherit nodes;}
+      // smallDroplet { inherit config; inherit pkgs; inherit nodes;};
 }
