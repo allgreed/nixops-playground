@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-NODE_IP := 134.209.234.73#TODO: dehardcode it
+NODE_IP := 134.209.237.145#TODO: dehardcode it
 NOMAD_URL := http://$(NODE_IP):4646
 DEPLOYMENT ?= single
 

@@ -1,32 +1,33 @@
-{ config, pkgs, nodes, ... }: 
+{ config, pkgs, ... }: 
 let
   whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
 
   nomadUser = "nomad";
-
   nomadService = kind: {
-        description = "Nomad ${kind}";
-        # TODO: how to do UI
+     description = "Nomad ${kind}";
+     # TODO: how to do UI
 
-        path = with pkgs; [
-          iproute
-        ];
+     path = with pkgs; [
+       iproute
+     ];
 
-        serviceConfig = {
-           # TODO: Nomad user
+     serviceConfig = {
+       # TODO: Nomad user
+       #User = nomadUser;
+       # TODO: Nomad group as well ? o.0
+       #Group ={{ nomad_group }}
 
-           ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
-           ExecReload = "/run/current-system/sw/bin/kill -HUP $MAINPID";
+       ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
+       ExecReload = "/run/current-system/sw/bin/kill -HUP $MAINPID";
 
-           KillMode="process";
+       KillMode="process";
+       Restart = "on-failure";
+       RestartSec="42s";
+     };
 
-           Restart = "on-failure";
-           RestartSec="42s";
-        };
-
-        wantedBy = [ "multi-user.target" ];
-        wants = [ "basic.target" ];
-        after = [ "basic.target" "network.target" ];
+     wantedBy = [ "multi-user.target" ];
+     wants = [ "basic.target" ];
+     after = [ "basic.target" "network.target" ];
   };
 
   nomadCommonConfiguration = ''
@@ -72,15 +73,28 @@ in
 
     virtualisation.docker.enable = true;
 
+    # TODO: why this is not respected? o.0
+    #users.mutableUsers = false;
+
+    #users.users.nomad = {
+    #    isSystemUser = true;
+    #    group = "";
+    #    #extraGroups = [ "docker" ];
+    #};
+
     environment.etc = {
       "${nomadServerConfiguration.filename}" = {
         text = nomadServerConfiguration.text;
-        mode = "0440";
+        user = nomadUser;
+        #mode = "0440";
+        mode = "0444";
       };
 
       "${nomadClientConfiguration.filename}" = {
         text = nomadClientConfiguration.text;
-        mode = "0440";
+        user = nomadUser;
+        #mode = "0440";
+        mode = "0444";
       };
     };
 
