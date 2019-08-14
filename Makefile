@@ -8,7 +8,9 @@ NOMAD_URL := http://$(NODE_IP):4646
 JOBS := $(shell find jobs -type f -name '*.nomad')
 
 
-.PHONY: up down tunnel deploy
+.PHONY: up down tunnel deploy all
+all: up workload ## set the whole thing up
+
 up: ## create the environement
 	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
 	./isoltate-mutli-user-target # ensure congreunt deployment
