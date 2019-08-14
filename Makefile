@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := help
 
-NODE_IP := `nixops info -d single --no-eval --plain | grep -Po '\d+.\d+.\d+\.\d+' | head -n 1`
 DEPLOYMENT ?= single
+
+NODE_IP := `nixops info --deployment $(DEPLOYMENT) --no-eval --plain | grep -Po '\d+.\d+.\d+\.\d+' | head -n 1`
 
 NOMAD_URL := http://$(NODE_IP):4646
 JOBS := $(shell find jobs -type f -name '*.nomad')
@@ -9,15 +10,15 @@ JOBS := $(shell find jobs -type f -name '*.nomad')
 
 .PHONY: up down tunnel deploy
 up: ## create the environement
-	nixops deploy -d $(DEPLOYMENT) --allow-reboot
+	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
 	./isoltate-mutli-user-target # ensure congreunt deployment
 
 deploy: ## apply changes
-	nixops deploy -d $(DEPLOYMENT)
+	nixops deploy --deployment $(DEPLOYMENT)
 	./isoltate-mutli-user-target # ensure congreunt deployment
 
 down: ## destroy the environment
-	nixops destroy -d $(DEPLOYMENT)
+	nixops destroy --deployment $(DEPLOYMENT)
 
 tunnel: ## setup local port forwarding for Consul UI
 	ssh root@$(NODE_IP) -L :8500:localhost:8500 -T
