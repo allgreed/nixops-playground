@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, nodes, ... }: 
 let
   nomadCommonConfig = ''
     log_level = "DEBUG"
@@ -9,14 +9,7 @@ let
     text = ''
       server {
           enabled = true
-          // TODO: dehardcode it
-          bootstrap_expect = 1
-      }
-
-      server_join {
-          // TODO: make it dynamic
-          retry_join = [
-          ]
+          bootstrap_expect = ${with builtins; toString (length (attrNames nodes))} // TODO: add support for non-Nomad nodes
       }
 
       ${nomadCommonConfig}'';
@@ -25,6 +18,8 @@ let
   nomadClientConfig = {
     filename = "nomad-client.hcl";
     text = ''
+      datacenter = "dc1"
+
       client {
           enabled = true
       }
