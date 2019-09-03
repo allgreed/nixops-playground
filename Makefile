@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-DEPLOYMENT ?= single
+DEPLOYMENT ?= multi
 
 NODE_IP := `nixops info --deployment $(DEPLOYMENT) --no-eval --plain | grep -Po '\d+.\d+.\d+\.\d+' | head -n 1`
 

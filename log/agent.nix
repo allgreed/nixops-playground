@@ -12,6 +12,8 @@ in
       vimHugeX
   ];
 
+  # TODO: make consul cluster work - disable Nomad clustering for the time being
+
   # TODO: ops accounts (from seperate file)
   # TODO: add ssh banner
   # TODO: secure ssh
