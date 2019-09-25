@@ -1,5 +1,5 @@
 let
-    agent = import ./log/agent.nix;
+  agent = import ./logic/agent.nix;
     smallDroplet = import ./phy/droplet.nix;
 in
 {

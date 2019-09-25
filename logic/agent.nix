@@ -26,7 +26,7 @@ in
   # TODO: copy apps configs (how about stically through etc? :D)
   # TODO: copy job descriptions
   # TODO: tune them so that they work
-  # TODO: move ephemeral data
+  # TODO: move persistent data
 
   virtualisation.docker.enable = true;
 
@@ -38,7 +38,7 @@ in
       description = "Consul client and server";
 
       serviceConfig = {
-         ExecStart = "${whichPkg "consul"} agent --dev --ui";
+         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}'";
          Restart = "on-failure";
       };
 
