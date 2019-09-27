@@ -1,5 +1,6 @@
-{ config, pkgs, nodes, ... }: 
+{ config, pkgs, nodes, name, ... }:
 let
+  getCurrentPublicIPv4Address = nodes: currentNode: with builtins; (getAttr currentNode nodes).config.networking.publicIPv4;
   nomadCommonConfig = ''
     log_level = "DEBUG"
     data_dir = "/var/nomad"'';
@@ -10,6 +11,12 @@ let
       server {
           enabled = true
           bootstrap_expect = ${with builtins; toString (length (attrNames nodes))} // TODO: add support for non-Nomad nodes
+      }
+
+      advertise {
+        http = "${getCurrentPublicIPv4Address nodes name}"
+        rpc  = "${getCurrentPublicIPv4Address nodes name}"
+        serf = "${getCurrentPublicIPv4Address nodes name}"
       }
 
       ${nomadCommonConfig}'';
