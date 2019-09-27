@@ -1,6 +1,7 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, nodes, ... }:
 let
   whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
+  anyPublicIP = nodes: with builtins; (elemAt (attrValues nodes) 1).config.networking.publicIPv4;
 in
 {
   imports = [
@@ -38,7 +39,7 @@ in
       description = "Consul client and server";
 
       serviceConfig = {
-         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}'";
+         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --retry-join '${anyPublicIP nodes}'";
          Restart = "on-failure";
       };
 
