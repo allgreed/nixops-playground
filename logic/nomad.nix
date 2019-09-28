@@ -1,6 +1,5 @@
 { config, pkgs, nodes, name, ... }:
 let
-  getCurrentPublicIPv4Address = nodes: currentNode: with builtins; (getAttr currentNode nodes).config.networking.publicIPv4;
   nomadCommonConfig = ''
     log_level = "DEBUG"
     data_dir = "/var/nomad"'';
@@ -10,7 +9,7 @@ let
     text = ''
       server {
           enabled = true
-          bootstrap_expect = ${with builtins; toString (length (attrNames nodes))} // TODO: add support for non-Nomad nodes
+          bootstrap_expect = ${with builtins; toString (length (attrNames nodes))}
       }
 
       advertise {
@@ -65,21 +64,20 @@ let
     after = [ "basic.target" "network.target" ];
   };
 
-  user = "nomad";
-
   nomadConfigEntry = config: {
     "${config.filename}" = {
       text = config.text;
 
       inherit user;
-      #mode = "0440";
       mode = "0444";
     };
   };
   
+  user = "nomad";
   nomadServer = "server";
   nomadClient = "client";
 
+  getCurrentPublicIPv4Address = nodes: currentNode: with builtins; (getAttr currentNode nodes).config.networking.publicIPv4;
   whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
 in
 {
@@ -101,8 +99,4 @@ in
 
   systemd.services.nomad-client = nomadService nomadClient;
   systemd.services.nomad-server = nomadService nomadServer;
-
-  networking.firewall.allowedTCPPorts = [
-    # TODO: nomad ports
-  ];
 }
