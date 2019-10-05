@@ -4,22 +4,22 @@ let
     log_level = "DEBUG"
     data_dir = "/var/nomad"'';
 
-  nomadServerConfig = {
-    filename = "nomad-server.hcl";
-    text = ''
-      server {
-          enabled = true
-          bootstrap_expect = ${with builtins; toString (length (attrNames nodes))}
-      }
+    nomadServerConfig = {
+      filename = "nomad-server.hcl";
+      text = ''
+        server {
+            enabled = true
+            bootstrap_expect = ${with builtins; toString (length (attrNames nodes))}
+        }
 
-      advertise {
-        http = "${getCurrentPublicIPv4Address nodes name}"
-        rpc  = "${getCurrentPublicIPv4Address nodes name}"
-        serf = "${getCurrentPublicIPv4Address nodes name}"
-      }
+        advertise {
+          http = "${thisNodeIP}"
+          rpc  = "${thisNodeIP}"
+          serf = "${thisNodeIP}"
+        }
 
-      ${nomadCommonConfig}'';
-  };
+        ${nomadCommonConfig}'';
+    };
 
   nomadClientConfig = {
     filename = "nomad-client.hcl";
@@ -46,11 +46,6 @@ let
     ];
 
     serviceConfig = {
-      # TODO: Nomad user
-      #User = user;
-      # TODO: Nomad group as well ? o.0
-      #Group ={{ nomad_group }}
-
       ExecStart = "${whichPkg "nomad"} agent --config /etc/nomad-${kind}.hcl";
       ExecReload = "/run/current-system/sw/bin/kill -HUP $MAINPID";
 
@@ -60,37 +55,32 @@ let
     };
 
     wantedBy = [ "multi-user.target" ];
-    wants = [ "basic.target" ];
-    after = [ "basic.target" "network.target" ];
+    requires = [ "consul-dev.service" ]
+      ++ (if kind == "client" then [ "nomad-server.service" ] else [])
+    ;
+    after = [ "consul-dev.service" ]
+      ++ (if kind == "client" then [ "nomad-server.service" ] else [])
+    ;
+    # TODO: is everything here necessary?
   };
 
   nomadConfigEntry = config: {
     "${config.filename}" = {
       text = config.text;
-
-      inherit user;
       mode = "0444";
     };
   };
   
-  user = "nomad";
   nomadServer = "server";
   nomadClient = "client";
 
-  getCurrentPublicIPv4Address = nodes: currentNode: with builtins; (getAttr currentNode nodes).config.networking.publicIPv4;
+  thisNodeIP = with builtins; (getAttr name nodes).config.networking.publicIPv4;
   whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
 in
 {
   environment.systemPackages = with pkgs; [
     nomad
   ];
-
-  # TODO: why this is not respected? o.0
-  #users.users.nomad = {
-  #    isSystemUser = true;
-  #    group = "";
-  #    #extraGroups = [ "docker" ];
-  #};
 
   environment.etc = 
     nomadConfigEntry nomadServerConfig //

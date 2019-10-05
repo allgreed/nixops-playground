@@ -14,11 +14,10 @@ in
   ];
 
   # TODO: ops accounts (from seperate file)
+
   # TODO: ensure machines won't go to sleep after closing lid
-  
   # TODO: bring cluster-zwei online
 
-  # TODO: finish fixing Nomad
   # TODO: extract Consul
   # TODO: add ssh banner
   # TODO: secure ssh
