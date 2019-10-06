@@ -35,6 +35,7 @@ in
 
   # TODO: setup distributed DB
   # TODO: do better security XD
+    # add explicit users and minimum privilages everywhere
 
   virtualisation.docker.enable = true;
   users.mutableUsers = false;

@@ -41,6 +41,8 @@ let
     description = "Nomad ${kind}";
     # TODO: how to do UI
 
+    # not much point in running as non-root, since it has access to the Docker socket anyway
+
     path = with pkgs; [
       iproute
     ];
@@ -54,14 +56,8 @@ let
       RestartSec="42s";
     };
 
+    after = if kind == "client" then [ "nomad-server.service" ] else [ "consul-dev.service" ];
     wantedBy = [ "multi-user.target" ];
-    requires = [ "consul-dev.service" ]
-      ++ (if kind == "client" then [ "nomad-server.service" ] else [])
-    ;
-    after = [ "consul-dev.service" ]
-      ++ (if kind == "client" then [ "nomad-server.service" ] else [])
-    ;
-    # TODO: is everything here necessary?
   };
 
   nomadConfigEntry = config: {
