@@ -20,7 +20,7 @@ job "mateometer"
             {
                 name = "${JOB}"
                 port = "http"
-                tags = ["http"]
+                tags = ["http", "urlprefix-/mate strip=/mate"]
 
                 check
                 {

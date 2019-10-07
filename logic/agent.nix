@@ -41,13 +41,22 @@ in
   users.mutableUsers = false;
   networking.firewall.enable = false; # TODO: scurity, heh xD - is doing firewall worth it in this case?
 
+  # TODO: Fix this - this works, but breaks other DNS resolution
+  #networking.networkmanager.enable = true;
+  #networking.networkmanager.insertNameservers = [ "127.0.0.1" ]; # use ConsulDNS
+  services.resolved.enable = true;
+  services.resolved.extraConfig = ''
+    DNS=127.0.0.1
+    Domains=~consul
+  '';
+
   # TODO: Move it into a real service without --dev
   # TODO: how about containers and using system stuff? ;D
   systemd.services.consul-dev = {
       description = "Consul client and server";
 
       serviceConfig = {
-         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --retry-join '${anyPublicIP nodes}'";
+         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --retry-join '${anyPublicIP nodes}' --dns-port 53";
          Restart = "on-failure";
       };
 

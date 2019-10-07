@@ -1,0 +1,1 @@
+- external routing and load-balancing is done via Fabio <- TODO: link to relevant configuration

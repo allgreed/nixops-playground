@@ -13,11 +13,11 @@ all: up workload ## set the whole thing up
 
 up: ## create the environement
 	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
-	./isoltate-mutli-user-target # ensure congreunt deployment
+	./isoltate-mutli-user-target # ensure congruent deployment
 
 deploy: ## apply changes
 	nixops deploy --deployment $(DEPLOYMENT)
-	./isoltate-mutli-user-target # ensure congreunt deployment
+	./isoltate-mutli-user-target # ensure congruent deployment
 
 down: ## destroy the environment
 	nixops destroy --deployment $(DEPLOYMENT)
