@@ -32,6 +32,11 @@ workload: $(JOBS) ## apply latest jobs configuration
 $(JOBS):
 	nomad job run -address=$(NOMAD_URL) $@
 
+restart-nomad: ## restart nomad service on all hosts
+	nixops ssh-for-each systemctl restart nomad-server.service
+	sleep 3
+	nixops ssh-for-each systemctl restart nomad-client.service
+
 
 .PHONY: help
 help: ## print this message

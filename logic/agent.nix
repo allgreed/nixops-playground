@@ -14,13 +14,14 @@ in
   ];
 
   # TODO: ops accounts (from seperate file)
+  # TODO: add direnv + default.nix
 
   # TODO: ensure machines won't go to sleep after closing lid
   # TODO: bring cluster-zwei online
 
   # TODO: extract Consul
   # TODO: add ssh banner
-  # TODO: secure ssh
+  # TODO: secure ssh (will it break nixops?)
 
   # TODO: shared FS across nodes - full replication
   # TODO: add management scripts from Squire
@@ -35,20 +36,27 @@ in
 
   # TODO: setup distributed DB
   # TODO: do better security XD
+  # TODO: change generic DNS to OpenNic
     # add explicit users and minimum privilages everywhere
+    # firewall - is doing firewall worth it in this case?
 
   virtualisation.docker.enable = true;
   users.mutableUsers = false;
-  networking.firewall.enable = false; # TODO: scurity, heh xD - is doing firewall worth it in this case?
+  networking.firewall.enable = false;
 
-  # TODO: Fix this - this works, but breaks other DNS resolution
-  #networking.networkmanager.enable = true;
-  #networking.networkmanager.insertNameservers = [ "127.0.0.1" ]; # use ConsulDNS
-  services.resolved.enable = true;
-  services.resolved.extraConfig = ''
-    DNS=127.0.0.1
-    Domains=~consul
-  '';
+  services.dnsmasq = {
+    enable = true;
+    resolveLocalQueries = true;
+    alwaysKeepRunning = true;
+    servers = [
+      "8.8.8.8"
+      "/consul/127.0.0.1#8600"
+    ];
+    extraConfig = ''
+      cache-size=0
+      no-resolv
+    '';
+  };
 
   # TODO: Move it into a real service without --dev
   # TODO: how about containers and using system stuff? ;D
@@ -56,7 +64,7 @@ in
       description = "Consul client and server";
 
       serviceConfig = {
-         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --retry-join '${anyPublicIP nodes}' --dns-port 53";
+         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --retry-join '${anyPublicIP nodes}'";
          Restart = "on-failure";
       };
 
