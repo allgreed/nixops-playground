@@ -8,12 +8,18 @@ NOMAD_URL := http://$(NODE_IP):4646
 JOBS := $(shell find jobs -type f -name '*.nomad')
 
 
-.PHONY: up down tunnel deploy all
-all: up workload ## set the whole thing up
+.PHONY: up down tunnel deploy all upfs
+all: up upfs workload ## set the whole thing up
 
 up: ## create the environement
 	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
+	sleep 10 # don't fucking ask...
+	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
 	./isoltate-mutli-user-target # ensure congruent deployment
+
+upfs: ## setup main gluster volume
+	./setup-glusterfs-cluster
+	./mount-glusterfs
 
 deploy: ## apply changes
 	nixops deploy --deployment $(DEPLOYMENT)
@@ -22,20 +28,20 @@ deploy: ## apply changes
 down: ## destroy the environment
 	nixops destroy --deployment $(DEPLOYMENT)
 
-tunnel: ## setup local port forwarding for Consul UI
-	ssh root@$(NODE_IP) -L :8500:localhost:8500 -T
-	
-
 .PHONY: $(JOBS) workload
 workload: $(JOBS) ## apply latest jobs configuration
 
 $(JOBS):
 	nomad job run -address=$(NOMAD_URL) $@
 
+tunnel: ## setup local port forwarding for Consul UI
+	ssh root@$(NODE_IP) -L :8500:localhost:8500 -T
+
+.PHONY: restart-nomad
 restart-nomad: ## restart nomad service on all hosts
-	nixops ssh-for-each systemctl restart nomad-server.service
+	nixops ssh-for-each -p systemctl restart nomad-server.service
 	sleep 3
-	nixops ssh-for-each systemctl restart nomad-client.service
+	nixops ssh-for-each -p systemctl restart nomad-client.service
 
 
 .PHONY: help

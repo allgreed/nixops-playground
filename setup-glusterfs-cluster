@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+nixops ssh-for-each -p 'mkdir -p /var/state /var/glusterfs'
+
+# TODO: do I need a probe before setting up volumes? o.0
+# TODO: Dehardcode machine names
+nixops ssh maszyna0 gluster volume create state replica 3 maszyna0:/var/glusterfs maszyna1:/var/glusterfs maszyna2:/var/glusterfs force
+nixops ssh maszyna0 gluster volume start state

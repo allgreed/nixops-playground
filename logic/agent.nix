@@ -16,16 +16,16 @@ in
   # TODO: ops accounts (from seperate file)
   # TODO: add direnv + default.nix
 
+  # TODO: move gluster mounts into nixos
   # TODO: ensure machines won't go to sleep after closing lid
+
   # TODO: bring cluster-zwei online
 
   # TODO: extract Consul
   # TODO: add ssh banner
   # TODO: secure ssh (will it break nixops?)
 
-  # TODO: shared FS across nodes - full replication
-  # TODO: add management scripts from Squire
-  # TODO: make sure Consul is production grade ;d 
+  # TODO: add management scripts from Squire vs. make sure they're not needed
   # TODO: backups!
 
   # TODO: copy apps configs (how about stically through etc? :D)
@@ -48,15 +48,19 @@ in
     enable = true;
     resolveLocalQueries = true;
     alwaysKeepRunning = true;
+
     servers = [
       "8.8.8.8"
       "/consul/127.0.0.1#8600"
     ];
+
     extraConfig = ''
       cache-size=0
       no-resolv
     '';
   };
+
+  services.glusterfs.enable = true;
 
   # TODO: Move it into a real service without --dev
   # TODO: how about containers and using system stuff? ;D

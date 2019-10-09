@@ -1,1 +1,4 @@
-- external routing and load-balancing is done via Fabio <- TODO: link to relevant configuration
+# Nixops playground
+
+## Potentially confusing
+- external routing and load-balancing is done via Fabio - hence the weird Consul tags on services <- TODO: link to relevant configuration
