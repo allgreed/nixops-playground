@@ -13,7 +13,7 @@ all: up upfs workload ## set the whole thing up
 
 up: ## create the environement
 	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
-	sleep 10 # don't fucking ask...
+	sleep 20 # don't fucking ask...
 	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
 	./isoltate-mutli-user-target # ensure congruent deployment
 
