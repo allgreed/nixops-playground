@@ -14,8 +14,6 @@ in
       vimHugeX
   ];
 
-  # TODO: add direnv + default.nix
-
   # TODO: move gluster mounts into nixos
   # TODO: ensure machines won't go to sleep after closing lid
   # TODO: bring cluster-zwei online
