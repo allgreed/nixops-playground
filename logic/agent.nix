@@ -72,4 +72,11 @@ in
 
       wantedBy = [ "multi-user.target" ];
   };
+
+  nix.autoOptimiseStore = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 90d";
+  };
 }
