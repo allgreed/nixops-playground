@@ -14,27 +14,24 @@ in
       vimHugeX
   ];
 
-  # TODO: move gluster mounts into nixos
-  # TODO: ensure machines won't go to sleep after closing lid
-  # TODO: bring cluster-zwei online
+  # TODO: pin nixpkgs
 
   # TODO: extract Consul
-  # TODO: add ssh banner
+  # TODO: measure resource usage without anything running
+
+  # TODO: have sum fun
+  # TODO: move gluster mounts into nixos
+
+  # TODO: use traefik instead of fabio
+  # TODO: have sum fun
+
   # TODO: secure ssh (will it break nixops?)
-  # TODO: backups!
 
-  # TODO: copy apps configs (how about stically through etc? :D) - Consul
-  # TODO: copy job descriptions
-  # TODO: tune them so that they work
-
-  # TODO: add management scripts from Squire vs. make sure they're not needed
-  # TODO: move persistent data
-
-  # TODO: change generic DNS to OpenNic
   # TODO: do better security XD
-    # add explicit users and minimum privilages everywhere
-    # firewall - is doing firewall worth it in this case?
     # go through "security" options on nixos
+
+  # TODO: add vault
+  # TODO: have sum fun
 
   virtualisation.docker.enable = true;
   networking.firewall.enable = false;
@@ -58,6 +55,7 @@ in
   services.glusterfs.enable = true;
 
   users.mutableUsers = false;
+  # TODO: fix the seccurity
   security.sudo.wheelNeedsPassword = false; # at least until I figure out how to securely set passwords across multiple machines
 
   # TODO: Move it into a real service without --dev
