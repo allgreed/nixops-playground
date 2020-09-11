@@ -44,6 +44,9 @@ restart-nomad: ## restart nomad service on all hosts
 	nixops ssh-for-each -p systemctl restart nomad-client.service
 
 
-.PHONY: help
+.PHONY: help init
+init: ## one time setup
+	direnv allow .
+
 help: ## print this message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
