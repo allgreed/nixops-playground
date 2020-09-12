@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+
+keys=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys" | jq '.ssh_keys | .[] | select(.name | match("SSH Key maszyna")) | .id' | tr '\n' ' ')
+for key_id in $keys 
+do
+    curl -X DELETE -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys/$key_id"
+done

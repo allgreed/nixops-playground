@@ -1,34 +1,30 @@
 { config, pkgs, nodes, ... }:
-let
-  whichPkg = pkg: "${builtins.getAttr pkg pkgs}/bin/${pkg}";
-  anyPublicIP = nodes: with builtins; (elemAt (attrValues nodes) 1).config.networking.publicIPv4;
-in
 {
   imports = [
     ./nomad.nix
-    ./operators.nix
+    ./consul.nix
+    #./operators.nix
+    # TODO: fix the operators
   ];
 
   environment.systemPackages = with pkgs; [
-      consul
       vimHugeX
   ];
 
-  # TODO: pin nixpkgs
+  # TODO: figure out how to pin nixops to my funny version and document that a DO key in env vars is required
 
-  # TODO: extract Consul
-  # TODO: measure resource usage without anything running
-
-  # TODO: have sum fun
+  # TODO: have sum fun - deploy stateful service, shut a designated node for a minute, observe what happens
   # TODO: move gluster mounts into nixos
 
   # TODO: use traefik instead of fabio
-  # TODO: have sum fun
-
-  # TODO: secure ssh (will it break nixops?)
+  # TODO: have sum fun - try hooking it up to a domain
 
   # TODO: do better security XD
+    # secure access to Nomad
     # go through "security" options on nixos
+  # TODO: have sum fun - use a real DB from DO and register it into Consul 
+
+  # TODO: secure ssh (will it break nixops?)
 
   # TODO: add vault
   # TODO: have sum fun
@@ -57,19 +53,6 @@ in
   users.mutableUsers = false;
   # TODO: fix the seccurity
   security.sudo.wheelNeedsPassword = false; # at least until I figure out how to securely set passwords across multiple machines
-
-  # TODO: Move it into a real service without --dev
-  # TODO: how about containers and using system stuff? ;D
-  systemd.services.consul-dev = {
-      description = "Consul client and server";
-
-      serviceConfig = {
-         ExecStart = "${whichPkg "consul"} agent --dev --ui --bind '{{ GetPublicIP }}' --retry-join '${anyPublicIP nodes}'";
-         Restart = "on-failure";
-      };
-
-      wantedBy = [ "multi-user.target" ];
-  };
 
   nix.autoOptimiseStore = true;
   nix.gc = {

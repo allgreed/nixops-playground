@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-nixops ssh-for-each -p systemctl isolate multi-user.target
+nixops ssh-for-each -d multi -p systemctl isolate multi-user.target

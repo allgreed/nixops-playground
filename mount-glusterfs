@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-nixops ssh-for-each -p 'echo "localhost:/state /var/state glusterfs defaults,_netdev" > gmount; mount -T gmount -a'
+nixops ssh-for-each -d multi -p 'echo "localhost:/state /var/state glusterfs defaults,_netdev" > gmount; mount -T gmount -a'

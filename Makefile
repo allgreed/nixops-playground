@@ -12,7 +12,7 @@ JOBS := $(shell find jobs -type f -name '*.nomad')
 all: up upfs workload ## set the whole thing up
 
 up: ## create the environement
-	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
+	-nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
 	sleep 20 # don't fucking ask...
 	nixops deploy --deployment $(DEPLOYMENT) --allow-reboot
 	./isoltate-mutli-user-target # ensure congruent deployment
@@ -27,6 +27,7 @@ deploy: ## apply changes
 
 down: ## destroy the environment
 	nixops destroy --deployment $(DEPLOYMENT)
+	./clean-keys
 
 .PHONY: $(JOBS) workload
 workload: $(JOBS) ## apply latest jobs configuration
@@ -39,9 +40,9 @@ tunnel: ## setup local port forwarding for Consul UI
 
 .PHONY: restart-nomad
 restart-nomad: ## restart nomad service on all hosts
-	nixops ssh-for-each -p systemctl restart nomad-server.service
+	nixops ssh-for-each --deployment $(DEPLOYMENT) -p systemctl restart nomad-server.service
 	sleep 3
-	nixops ssh-for-each -p systemctl restart nomad-client.service
+	nixops ssh-for-each --deployment $(DEPLOYMENT) -p systemctl restart nomad-client.service
 
 
 .PHONY: help init

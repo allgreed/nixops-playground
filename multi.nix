@@ -9,9 +9,9 @@ in
     maszyna0 = { config, pkgs, nodes, ... }: agent { inherit config; inherit pkgs; inherit nodes;}
       // smallDroplet { inherit config; inherit pkgs; inherit nodes;};
 
-#    maszyna1 = { config, pkgs, nodes, ... }: agent { inherit config; inherit pkgs; inherit nodes;}
-#      // smallDroplet { inherit config; inherit pkgs; inherit nodes;};
-#
-#    maszyna2 = { config, pkgs, nodes, ... }: agent { inherit config; inherit pkgs; inherit nodes;}
-#      // smallDroplet { inherit config; inherit pkgs; inherit nodes;};
+    maszyna1 = { config, pkgs, nodes, ... }: agent { inherit config; inherit pkgs; inherit nodes;}
+      // smallDroplet { inherit config; inherit pkgs; inherit nodes;};
+
+    maszyna2 = { config, pkgs, nodes, ... }: agent { inherit config; inherit pkgs; inherit nodes;}
+      // smallDroplet { inherit config; inherit pkgs; inherit nodes;};
 }

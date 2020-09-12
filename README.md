@@ -16,5 +16,8 @@ direnv allow .
 make help
 ```
 
+## Notes
+- the resource usage with nothing significant running is ~10% CPU (tiniest DO droplet) and ~300 Mb of RAM
+
 ## Potentially confusing
 - external routing and load-balancing is done via Fabio - hence the weird Consul tags on services <- TODO: link to relevant configuration
